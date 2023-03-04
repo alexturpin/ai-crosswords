@@ -2,6 +2,7 @@
   "scripts": {},
   "type": "module",
   "devDependencies": {
+    "@types/node": "^18.11.19",
     "tsx": "^3.12.1"
   },
   "dependencies": {
