@@ -1,4 +1,4 @@
-import { fillCrossword, Grid } from "./crossword"
+import { fillCrossword, type Grid } from "./crossword"
 import { readFileSync } from "fs"
 
 for (let i = 0; i < 10; i++) console.log("")
