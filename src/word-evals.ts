@@ -18,8 +18,8 @@ const genAI = new GoogleGenerativeAI(apiKey)
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-pro",
   systemInstruction: `
-    We are making a crossword puzzle app. This is a list of potential words for us to use.
-    We are looking at understanding the difficulty of each term and how common they are.
+    We are making a crossword puzzle app.
+    We are looking at evaluating the difficulty of each term and how common they are.
 
     Your task is to use each term in a sentence if possible, to determine if they are real words or not.
     Then, please rate every term's difficulty, from 1-5 using the following scale:
@@ -43,8 +43,8 @@ const generationConfig = {
 }
 
 const BATCH_SIZE = 100
-const INPUT_FILE = new URL(`./merged-3-7.txt`, import.meta.url)
-const OUTPUT_FILE = new URL(`./merged-3-7.csv`, import.meta.url)
+const INPUT_FILE = new URL(`./words/list.txt`, import.meta.url)
+const OUTPUT_FILE = new URL(`./words/evals.csv`, import.meta.url)
 
 // Price (input) $3.50 / 1 million tokens (for prompts up to 128K tokens)
 const INPUT_TOKEN_COST = 3.5 / 1e6

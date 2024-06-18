@@ -1,24 +1,6 @@
+import type { Trie } from "./trie"
+
 export type Grid = string[][]
-
-type TrieNode = { [key: string]: TrieNode } & { isWord?: boolean }
-const createTrie = (words: string[]): TrieNode => {
-  const root: TrieNode = {}
-
-  for (let w = 0; w < words.length; w++) {
-    let currentNode = root
-    const word = words[w]
-    for (let i = 0; i < word.length; i++) {
-      const char = word[i]
-      if (!currentNode[char]) {
-        currentNode[char] = {}
-      }
-      currentNode = currentNode[char]
-    }
-    currentNode.isWord = true
-  }
-
-  return root
-}
 
 const shuffleArray = <T>(array: T[]): T[] => {
   const result = [...array]
@@ -29,9 +11,12 @@ const shuffleArray = <T>(array: T[]): T[] => {
   return result
 }
 
-export const fillCrossword = (words: string[]): Grid | null => {
-  const trie = createTrie(words)
-  const emptyGrid = Array.from({ length: 5 }, () => Array(5).fill(""))
+export const fillCrossword = (
+  trie: Trie,
+  width: number,
+  height: number
+): Grid | null => {
+  const emptyGrid = Array.from({ length: height }, () => Array(width).fill(""))
 
   const findSolution = (
     grid: Grid,
@@ -39,30 +24,27 @@ export const fillCrossword = (words: string[]): Grid | null => {
     col: number,
     usedWords: Set<string>
   ): Grid | null => {
-    if (row === 5) {
-      return grid
-    }
+    if (row === height) return grid
 
-    const nextRow = col === 4 ? row + 1 : row
-    const nextCol = col === 4 ? 0 : col + 1
+    const nextRow = col === width - 1 ? row + 1 : row
+    const nextCol = col === width - 1 ? 0 : col + 1
 
-    if (grid[row][col] !== "") {
+    if (grid[row][col] !== "")
       return findSolution(grid, nextRow, nextCol, usedWords)
-    }
 
     const getValidCharsForRow = (r: number): Set<string> => {
-      let currentNodeForRow = trie
-      for (let i = 0; i < col; i++) {
+      let currentNodeForRow = trie[width]
+      for (let i = 0; i < col; i++)
         currentNodeForRow = currentNodeForRow[grid[r][i]] || {}
-      }
+
       return new Set(Object.keys(currentNodeForRow))
     }
 
     const getValidCharsForCol = (c: number): Set<string> => {
-      let currentNodeForCol = trie
-      for (let i = 0; i < row; i++) {
+      let currentNodeForCol = trie[height]
+      for (let i = 0; i < row; i++)
         currentNodeForCol = currentNodeForCol[grid[i][c]] || {}
-      }
+
       return new Set(Object.keys(currentNodeForCol))
     }
 
@@ -77,25 +59,21 @@ export const fillCrossword = (words: string[]): Grid | null => {
         i === row ? r.slice(0, col).concat(c, r.slice(col + 1)) : r
       )
 
-      if (col === 4 || row === 4) {
+      if (col === width - 1 || row === height - 1) {
         const currentRow = newRow[row].join("")
         const currentCol = newRow.map((r) => r[col]).join("")
 
         // Check for duplicates in the row and column
-        if (usedWords.has(currentRow) || usedWords.has(currentCol)) {
-          continue
-        }
+        if (usedWords.has(currentRow) || usedWords.has(currentCol)) continue
 
         usedWords.add(currentRow)
         usedWords.add(currentCol)
       }
 
       const solution = findSolution(newRow, nextRow, nextCol, usedWords)
-      if (solution) {
-        return solution
-      }
+      if (solution) return solution
 
-      if (col === 4 || row === 4) {
+      if (col === width - 1 || row === height - 1) {
         const currentRow = newRow[row].join("")
         const currentCol = newRow.map((r) => r[col]).join("")
         usedWords.delete(currentRow)
