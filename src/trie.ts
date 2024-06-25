@@ -22,9 +22,11 @@ export const createTrie = (words: string[]): TrieNode => {
   return root
 }
 
-const INPUT_FILE = new URL(`./words/words.csv`, import.meta.url)
+const INPUT_FILE = new URL(`./words/evals.csv`, import.meta.url)
 const OUTPUT_TRIE_FILE = new URL(`./words/trie.json`, import.meta.url)
 const OUTPUT_RATINGS_FILE = new URL(`./words/ratings.json`, import.meta.url)
+
+const MINIMUM_RATING = 3
 
 readFile(INPUT_FILE, "utf-8").then(async (data) => {
   const words: Record<number, string[]> = {}
@@ -39,7 +41,7 @@ readFile(INPUT_FILE, "utf-8").then(async (data) => {
     const ratingRaw = parts.at(-1)!
     const rating = parseInt(ratingRaw.trim())
 
-    if (!rating || rating >= 4) continue
+    if (!rating || rating >= MINIMUM_RATING) continue
 
     const len = word.length
     if (!words[len]) words[len] = []
