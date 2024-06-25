@@ -1,4 +1,4 @@
-import type { Trie } from "./trie"
+import type { Trie } from "./answers/trie"
 
 export type Grid = string[][]
 

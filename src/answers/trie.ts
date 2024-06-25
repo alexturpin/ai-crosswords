@@ -22,11 +22,14 @@ export const createTrie = (words: string[]): TrieNode => {
   return root
 }
 
-const INPUT_FILE = new URL(`./words/evals.csv`, import.meta.url)
-const OUTPUT_TRIE_FILE = new URL(`./words/trie.json`, import.meta.url)
-const OUTPUT_RATINGS_FILE = new URL(`./words/ratings.json`, import.meta.url)
+const INPUT_FILE = new URL(`./answers/answer-evals.csv`, import.meta.url)
+const OUTPUT_TRIE_FILE = new URL(`./answers/answer-trie.json`, import.meta.url)
+const OUTPUT_RATINGS_FILE = new URL(
+  `./answers/answer-ratings.json`,
+  import.meta.url
+)
 
-const MINIMUM_RATING = 3
+const MINIMUM_RATING = 4
 
 readFile(INPUT_FILE, "utf-8").then(async (data) => {
   const words: Record<number, string[]> = {}

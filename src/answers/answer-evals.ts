@@ -12,8 +12,8 @@ const openai = new OpenAI({
 })
 
 const BATCH_SIZE = 100
-const INPUT_FILE = new URL(`./words/list.txt`, import.meta.url)
-const OUTPUT_FILE = new URL(`./words/evals.csv`, import.meta.url)
+const INPUT_FILE = new URL(`./answers/answer-list.txt`, import.meta.url)
+const OUTPUT_FILE = new URL(`./answers/answer-evals.csv`, import.meta.url)
 
 // Price (input) $5 / 1 million tokens
 const INPUT_TOKEN_COST = 5 / 1e6
@@ -21,14 +21,14 @@ const INPUT_TOKEN_COST = 5 / 1e6
 // Price (output) $15 / 1 million tokens
 const OUTPUT_TOKEN_COST = 15 / 1e6
 
-async function processWords(words: string[]) {
+async function processAnswers(answers: string[]) {
   const result = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [
       {
         role: "system",
         content:
-          'We are making a crossword puzzle app in the style of the NYT Minis. Small, light, bite sized puzzles to do every day. We have a huge list of terms to pick from, but we want to understand which of these terms would make for a good crossword puzzle answer.\n\nOur target audience is young, likely 20-40 years old, from various backgrounds and countries but likely most familiar with American style of English.\n\nFor each term, your task is to use it in a simple sentence if possible (to determine if it\'s a real word) and if so, give it a rating as a crossword answer on familiarity and guessability.\n\nFor instance, the word "apple" is both a familiar word to most people in our target audience, and an easy one to make a crossword clue for. However, "aretha" as a first name might be familiar to some, but having them guess it requires knowledge of some public figure named "Aretha".\n\n1 - most people have heard of this and should be able to guess it\n2, 3 - harder levels but still guessable\n4 - reserved for guessable terms that require regional or specialized knowledge, maybe less common abbreviations, e.g. "ack" (TCP), CTO, AKC (American Kennel Club)\n5 - this is not a real word / archaic\n    \nPlease output each term, the sentence if possible, and the familiarity and difficulty ratings separated by commas and no extra whitespace or punctuation.\n\nExample input:\napple\naretha\naotea (not a real word)\n\nExample output:\napple,I love red apples,1\naretha,Singer Aretha Franklin,3\naozea,,5',
+          'We are making a crossword puzzle app in the style of the NYT Minis. Small, light, bite sized puzzles to do every day. We have a huge list of terms to pick from, but we want to understand which of these terms would make for a good crossanswer puzzle answer.\n\nOur target audience is young, likely 20-40 years old, from various backgrounds and countries but likely most familiar with American style of English.\n\nFor each term, your task is to use it in a simple sentence if possible (to determine if it\'s a real answer) and if so, give it a rating as a crossanswer answer on familiarity and guessability.\n\nFor instance, the answer "apple" is both a familiar answer to most people in our target audience, and an easy one to make a crossanswer clue for. However, "aretha" as a first name might be familiar to some, but having them guess it requires knowledge of some public figure named "Aretha".\n\n1 - most people have heard of this and should be able to guess it\n2, 3 - harder levels but still guessable\n4 - reserved for guessable terms that require regional or specialized knowledge, maybe less common abbreviations, e.g. "ack" (TCP), CTO, AKC (American Kennel Club)\n5 - this is not a real answer / archaic\n    \nPlease output each term, the sentence if possible, and the familiarity and difficulty ratings separated by commas and no extra whitespace or punctuation.\n\nExample input:\napple\naretha\naotea (not a real answer)\n\nExample output:\napple,I love red apples,1\naretha,Singer Aretha Franklin,3\naozea,,5',
       },
       {
         role: "user",
@@ -49,7 +49,7 @@ async function processWords(words: string[]) {
         content: [
           {
             type: "text",
-            text: words.join("\n"),
+            text: answers.join("\n"),
           },
         ],
       },
@@ -109,8 +109,11 @@ async function getLastProcessedLine(): Promise<number> {
 
 let totalCost = 10.3
 
-async function processBatch(startLine: number, words: string[]): Promise<void> {
-  const { data, cost } = await processWords(words)
+async function processBatch(
+  startLine: number,
+  answers: string[]
+): Promise<void> {
+  const { data, cost } = await processAnswers(answers)
 
   await appendFile(OUTPUT_FILE, data.trim() + "\n", "utf-8")
 
@@ -141,7 +144,7 @@ async function main() {
     currentLine++
   }
 
-  // Process any remaining words in the last batch
+  // Process any remaining answers in the last batch
   if (batch.length > 0) {
     await processBatch(currentLine, batch)
   }
