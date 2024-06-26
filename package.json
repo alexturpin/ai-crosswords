@@ -1,15 +1,28 @@
 {
-  "scripts": {},
+  "scripts": {
+    "answers:generate-sql": "awk -f src/answers/generate-sql.awk src/answers/answers.tsv > src/answers/answers.sql",
+    "answers:insert": "./src/answers/insert-answers.sh",
+    "db:generate": "npx drizzle-kit generate",
+    "db:drop": "npx drizzle-kit drop",
+    "db:apply": "yes | wrangler d1 migrations apply dcc --local",
+    "db:reset": "rm -Ir .wrangler/state/v3/d1/miniflare-D1DatabaseObject && npm run db:apply",
+    "db:studio": "LOCAL_DB_PATH=$(find .wrangler/state/v3/d1/miniflare-D1DatabaseObject -type f -name '*.sqlite' -print -quit) drizzle-kit studio"
+  },
   "type": "module",
   "devDependencies": {
     "@types/node": "^18.11.19",
+    "drizzle-kit": "^0.22.7",
     "tsx": "^4.15.6",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.2",
+    "wrangler": "^3.62.0"
   },
   "dependencies": {
+    "@cloudflare/workers-types": "^4.20240620.0",
     "@google/generative-ai": "^0.12.0",
+    "@libsql/client": "^0.7.0",
     "dedent": "^1.5.3",
     "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.31.2",
     "openai": "^4.52.0",
     "prettier": "^3.3.2",
     "tiny-invariant": "^1.3.3",
